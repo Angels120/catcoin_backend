@@ -1,0 +1,50 @@
+{
+  "name": "telegram-typescript-bot-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --loader ts-node/esm src/cluster.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/qrcode": "^1.5.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@breejs/later": "^4.2.0",
+    "@grammyjs/i18n": "^1.0.1",
+    "@grammyjs/stateless-question": "^3.0.1",
+    "@telegraf/entity": "^0.4.0",
+    "@tma.js/init-data-node": "^1.1.5",
+    "@tonconnect/sdk": "^3.0.2",
+    "@types/breejs__later": "^4.1.5",
+    "@types/multicoin-address-validator": "^0.5.2",
+    "axios": "^1.6.5",
+    "bullmq": "^5.7.10",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.7.1",
+    "express": "^4.19.2",
+    "grammy": "^1.19.2",
+    "grammy-inline-menu": "^8.0.1",
+    "grammy-middlewares": "^1.0.11",
+    "ioredis": "^5.3.2",
+    "mongoose": "^8.0.2",
+    "multicoin-address-validator": "^0.5.16",
+    "p-queue": "^8.0.1",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.3",
+    "source-map-support": "^0.5.21",
+    "telegraf-middleware-console-time": "^2.1.0",
+    "tonweb": "^0.0.62",
+    "web3": "^4.5.0"
+  }
+}
