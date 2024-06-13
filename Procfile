@@ -1,0 +1,1 @@
+web: node node --loader ts-node/esm src/cluster.ts
