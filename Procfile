@@ -1,1 +1,1 @@
-web: node --loader ts-node/esm src/cluster.ts
+web: npm start
