@@ -9,6 +9,7 @@ const REDIS_HOST = env["REDIS_URL"] ?? "127.0.0.1";
 // console.log("REDIS_PORT", REDIS_PORT);
 // console.log("REDIS_HOST", REDIS_HOST);
 
+// const client = new Redis(REDIS_PORT, REDIS_HOST);
 const client = new Redis(REDIS_HOST); // Connect to 127.0.0.1:6379 as default
 
 // If you want to connect to a different Redis server or port, you can do:

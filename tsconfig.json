@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,

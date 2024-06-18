@@ -72,12 +72,14 @@ const httpServer = createServer(async (req, res) => {
 
 const io = new SocketIOServer(httpServer, {
   cors: {
+    // origin: "*", // Allow your client URL
     origin: env['GAME_URL'], // Allow your client URL
     methods: ['GET', 'POST'],
   },
 });
 
 io.on('connection', async (socket: Socket) => {
+  console.log("connected");
   const id = socket.handshake.query.id as string;
   const data = socket.handshake.query.data as string;
 
@@ -102,7 +104,7 @@ io.on('connection', async (socket: Socket) => {
   await setUserBalance(user.id, user.balance);
   await sendData(id);
   await sendJoinedTeamData(id);
-  await setUserBoostsCache(user.id, user.boosts);
+  // await setUserBoostsCache(user.id, user.boosts);
 
   socket.on('disconnect', async () => {
     try {
