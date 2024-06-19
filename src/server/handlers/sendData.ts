@@ -214,12 +214,12 @@ export async function sendUsersWithBalance(userId: string) {
     // Fetch the users
     const users = await getAllUsers();
 
-    const usersWithBalance = users.filter((user) => user.balance > 0)
+    const usersWithBalance = users.filter((user) => user.score > 0)
       .map((user) => {
       const username = user.username;
-      const balance = user.balance;
+      const score = user.score;
       const id = user.id;
-      return {username, balance, id};
+      return {username, score, id};
     });
     
 

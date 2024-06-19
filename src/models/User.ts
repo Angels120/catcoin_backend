@@ -383,7 +383,8 @@ export async function getUserCompletedTasks(id: number | string) {
 
 export async function getAllUsers() {
   try {
-    const users = await User.find({});
+    const users = await User.find({})
+                  .sort({score: -1});
     return users;
   } catch (err) {
     return [];
