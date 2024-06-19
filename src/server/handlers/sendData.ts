@@ -25,7 +25,6 @@ import { getUserAvatar } from '../../bot';
 import { getActiveTasks } from '../../models/Task';
 import { getRank } from './rank';
 type Payload = {
-  remainingClicks: number;
   maxClicks: number;
   score: number;
   rank: { rank: string; image: string };
@@ -71,7 +70,6 @@ export async function sendData(id: string) {
 
   // Initialize payload with user-specific data
   const payload: Payload = {
-    remainingClicks,
     maxClicks,
     score,
     clickValue,
