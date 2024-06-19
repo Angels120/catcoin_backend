@@ -177,6 +177,7 @@ io.on('connection', async (socket: Socket) => {
 
   socket.on('users', async () => {
     try {
+      console.log("trying fetch users");
       sendUsersWithBalance(id);
     } catch (error) {}
   });
