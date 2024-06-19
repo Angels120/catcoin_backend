@@ -12,6 +12,7 @@ import {
   getUserCompletedTasks,
   getUsersBoosts,
   getUsersReferredBy,
+  getAllUsers
 } from '../../models/User';
 import {
   getTeamScore,
@@ -202,6 +203,29 @@ export async function sendTasksWithStatus(userId: string) {
     socket.emit('tasks', tasksWithStatus);
   } catch (error) {
     console.error('Error getting tasks with status:', error);
+    throw error; // Rethrow or handle as needed
+  }
+}
+
+export async function sendUsersWithBalance(userId: string) {
+  try {
+    const socket = userSockets.get(userId);
+    if (!socket) return; // Exit early if no socket connection
+    // Fetch the users
+    const users = await getAllUsers();
+
+    const usersWithBalance = users.filter((user) => user.balance > 0)
+      .map((user) => {
+      const username = user.username;
+      const balance = user.balance;
+      const id = user.id;
+      return {username, balance, id};
+    });
+    
+
+    socket.emit('users', usersWithBalance);
+  } catch (error) {
+    console.error('Error getting users with status:', error);
     throw error; // Rethrow or handle as needed
   }
 }

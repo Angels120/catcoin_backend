@@ -20,6 +20,7 @@ import {
   sendFriendsData,
   sendJoinedTeamData,
   sendTasksWithStatus,
+  sendUsersWithBalance
 } from './handlers/sendData';
 import { env } from 'process';
 import {
@@ -173,6 +174,13 @@ io.on('connection', async (socket: Socket) => {
       sendTasksWithStatus(id);
     } catch (error) {}
   });
+
+  socket.on('users', async () => {
+    try {
+      sendUsersWithBalance(id);
+    } catch (error) {}
+  });
+  
 
   socket.on('check-task', async (taskId: string) => {
     try {
