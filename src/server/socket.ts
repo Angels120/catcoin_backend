@@ -62,8 +62,8 @@ const httpServer = createServer(async (req, res) => {
     res.write(JSON.stringify(result));
     res.end();
   } else if (url?.includes('/handleAffiliate')) {
-    const user = url.split('/')[2];
-    const referralId = url.split('/')[3];
+    const user = url.split('/')[3];
+    const referralId = url.split('/')[4];
     console.log(url);
     console.log("user:", user, "referral:", referralId);
     handleAffiliate(Number(user), Number(referralId));
