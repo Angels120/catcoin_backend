@@ -245,7 +245,8 @@ export async function sendUsersWithBalance(userId: string) {
       const username = user.username;
       const score = user.score;
       const id = user.id;
-      return {username, score, id};
+      const avatar = getUserAvatar(id);
+      return {username, score, id, avatar};
     });
     
     console.log("users", usersWithBalance);
