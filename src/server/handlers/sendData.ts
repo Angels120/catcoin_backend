@@ -107,7 +107,7 @@ export async function sendRemainingClicks(id: string) {
     // Calculate the difference in milliseconds and convert to seconds
     const differenceInSeconds = (date2.getTime() - date1.getTime()) / 1000;
     const temp = remainingClicks - currentClicks + ( differenceInSeconds / 4 );
-    console.log("remaing temp", temp);
+    console.log("remaing temp", differenceInSeconds);
     sendRemainingClicks = Math.min(temp, 1000);
   }
   console.log("Reaminig Clicks: ", sendRemainingClicks);
