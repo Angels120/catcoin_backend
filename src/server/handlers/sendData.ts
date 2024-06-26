@@ -240,14 +240,32 @@ export async function sendUsersWithBalance(userId: string) {
     // Fetch the users
     const users = await getAllUsers();
 
-    const usersWithBalance = users.filter((user) => user.score > 0)
-      .map((user) => {
-      const username = user.username;
-      const score = user.score;
-      const id = user.id;
-      const avatar = getUserAvatar(id);
-      return {username, score, id, avatar};
-    });
+    const usersWithBalance : {
+      username: string;
+      id : number;
+      score : number;
+      avatar : string | undefined;
+    }[] = [];
+
+    for(const user of users) {
+      if(user.score > 0){
+        const avatar = await getUserAvatar(user.id);
+        usersWithBalance.push({
+          username : user.username,
+          id : user.id,
+          score : user.score,
+          avatar
+        });
+      }
+    }
+    // const usersWithBalance = users.filter((user) => user.score > 0)
+    //   .map((user) => {
+    //   const username = user.username;
+    //   const score = user.score;
+    //   const id = user.id;
+    //   const avatar = getUserAvatar(id);
+    //   return {username, score, id, avatar};
+    // });
     
     console.log("users", usersWithBalance);
     socket.emit('users', usersWithBalance);
