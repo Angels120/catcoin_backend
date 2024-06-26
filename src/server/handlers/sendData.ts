@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { getUserBalance, getUserClicks } from '../../cache';
+import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime } from '../../cache';
 import { getTeamById } from '../../models/Team';
 import {
   BOOST_DESCRIPTIONS,
@@ -84,6 +84,30 @@ export async function sendData(id: string) {
   socket.emit('user-data', payload);
   const rankn = await getUserRankNumber(score);
   socket.emit('user-rank', rankn);
+}
+
+export async function sendRemainingClicks(id: string) {
+  const socket = userSockets.get(id.toString());
+  if (!socket) return; // Exit early if no socket connection
+
+  const remainingClicks = await getUserReamingClicks(id.toString());
+  const last_update_time = await getLastUpdateTime(id.toString());
+  const currentClicks = await getUserClicks(id.toString());
+  const currentTime = Date.now().toString();
+  let sendRemainingClicks = 0;
+  if(last_update_time == "0"){
+    sendRemainingClicks = 1000;
+  }
+  else {
+    const date1 = new Date(last_update_time);
+    const date2 = new Date(currentTime);
+
+    // Calculate the difference in milliseconds and convert to seconds
+    const differenceInSeconds = (date2.getTime() - date1.getTime()) / 1000;
+    sendRemainingClicks = Math.min(remainingClicks - currentClicks + ( differenceInSeconds / 4 ), 1000);
+  }
+  console.log("Reaminig Clicks: ", sendRemainingClicks);
+  socket.emit('init-remaingClicks', sendRemainingClicks);
 }
 
 export async function sendJoinedTeamData(id: string) {

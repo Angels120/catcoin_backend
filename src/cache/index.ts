@@ -29,6 +29,26 @@ export async function getUserClicks(userId: string) {
 export async function setUserClicks(userId: string, ammount: number) {
   redis.client.hset('user_clicks', `userId:${userId}`, ammount);
 }
+
+export async function getUserReamingClicks(userId: string) {
+  const remaining_clicks = await redis.client.hget('remaining_clicks', `userId:${userId}`);
+  return remaining_clicks ? parseInt(remaining_clicks) : 0;
+}
+
+export async function setUserReamingClicks(userId: string, amount:number) {
+  const clicks = await redis.client.hset('remaining_clicks', `userId:${userId}`, amount);
+}
+
+export async function getLastUpdateTime(userId: string) {
+  const last_update_time = await redis.client.hget('last_update_time', `userId:${userId}`);
+  return last_update_time ? last_update_time.toString() : "0";
+}
+
+export async function setLastUpdateTime(userId: string,) {
+  const currentTime = Date.now().toString();
+  const last_update_time = await redis.client.hset('last_update_time', `userId:${userId}`, currentTime);
+}
+
 export async function incrementClickCount(userId: string, incrementAmount: number) {
   redis.client.hincrby('user_clicks', `userId:${userId}`, incrementAmount);
 }

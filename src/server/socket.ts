@@ -15,6 +15,7 @@ import {
 import { handleUserClick } from './handlers/clickHandler';
 import { updateSingleUserScoreInDb } from './handlers/batchScoreUpdate';
 import {
+  sendRemainingClicks,
   sendBoostData,
   sendData,
   sendFriendsData,
@@ -105,6 +106,7 @@ io.on('connection', async (socket: Socket) => {
   await setUserTotalScore(user.id);
   await setUserBalance(user.id, user.balance);
   await sendData(id);
+  await sendRemainingClicks(id);
   await sendJoinedTeamData(id);
   // await setUserBoostsCache(user.id, user.boosts);
 
