@@ -101,10 +101,14 @@ export async function sendRemainingClicks(id: string) {
   else {
     const date1 = new Date(last_update_time);
     const date2 = new Date(currentTime);
+    console.log("last_update: ", last_update_time);
+    console.log("current: ", currentTime);
 
     // Calculate the difference in milliseconds and convert to seconds
     const differenceInSeconds = (date2.getTime() - date1.getTime()) / 1000;
-    sendRemainingClicks = Math.min(remainingClicks - currentClicks + ( differenceInSeconds / 4 ), 1000);
+    const temp = remainingClicks - currentClicks + ( differenceInSeconds / 4 );
+    console.log("remaing temp", temp);
+    sendRemainingClicks = Math.min(temp, 1000);
   }
   console.log("Reaminig Clicks: ", sendRemainingClicks);
   socket.emit('init-remaingClicks', sendRemainingClicks);
