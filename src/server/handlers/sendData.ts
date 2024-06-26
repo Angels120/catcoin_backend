@@ -108,7 +108,7 @@ export async function sendRemainingClicks(id: string) {
     const differenceInSeconds = (parseInt(currentTime) - parseInt(last_update_time)) / 1000;
     const temp = remainingClicks - currentClicks + ( differenceInSeconds / 4 );
     console.log("remaing temp", differenceInSeconds);
-    sendRemainingClicks = Math.min(temp, 1000);
+    sendRemainingClicks = Math.min(Math.round(temp), 1000);
   }
   console.log("Reaminig Clicks: ", sendRemainingClicks);
   socket.emit('init-remaingClicks', sendRemainingClicks);
