@@ -5,6 +5,8 @@ import {
   incrementScore,
   incrementUserBalance,
   setUserClicks,
+  setUserReamingClicks,
+  setLastUpdateTime
 } from '../../cache';
 import { getUserTotalScore } from '../../service/main';
 import { MAX_CLICKS_PER_DAY, userSockets } from '../../utils/constants';
@@ -53,7 +55,7 @@ async function loadLuaScript() {
   }
 }
 
-export async function handleUserClick(userId: string, clickCount: number): Promise<void> {
+export async function handleUserClick(userId: string, clickCount: number, remaingClicks: number): Promise<void> {
   try {
     const boosts = await getUsersBoostsCache(userId);
     const clickValueBoost = boosts ? boosts.find((b: any) => b.type === 'tapAmount') : { level: 0 };
@@ -75,6 +77,8 @@ export async function handleUserClick(userId: string, clickCount: number): Promi
     incrementUserBalance(userId, clickCount * clickValue);
 
     setUserClicks(userId, clickCount * clickValue);
+    setUserReamingClicks(userId, remaingClicks);
+    setLastUpdateTime(userId);
 
     sendData(userId);
   } catch (e) {}

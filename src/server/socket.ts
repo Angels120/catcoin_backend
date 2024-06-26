@@ -118,9 +118,9 @@ io.on('connection', async (socket: Socket) => {
     } catch (error) {}
   });
 
-  socket.on('click', (clickCount: number) => {
+  socket.on('click', (clickCount: number, remaingClicks: number) => {
     try {
-      handleUserClick(id, clickCount);
+      handleUserClick(id, clickCount, remaingClicks);
     } catch (error) {}
   });
 
