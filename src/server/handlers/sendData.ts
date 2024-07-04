@@ -126,6 +126,7 @@ export async function sendData(id: string) {
           description : era?.description,
           isActive: true
         };
+        console.log("eraData", eraData);
         socket.emit('era-data', eraData);
       }
       else {
