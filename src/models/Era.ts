@@ -17,7 +17,7 @@ const eraSchema = new Schema<IEra>({
   salo: { type: Number, required: true }, 
   rate: { type: Number, required: true },
   isActive: { type: Boolean, default: false },
-  startDate : { type: Date, default: undefined}
+  startDate : { type: Date, default: null}
 });
 
 const Era = model<IEra>('Era', eraSchema);

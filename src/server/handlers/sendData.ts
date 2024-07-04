@@ -83,7 +83,7 @@ export async function sendData(id: string) {
 
   if(era){
     
-    if(era.startDate != undefined){
+    if(era.startDate != null){
       const current = new Date();
       if((parseInt(current.toString()) - parseInt(era.startDate.toString())) > 1000 * 3600 * HALVING_PERIOD){
         const updateEra = await updateLevel();
@@ -130,7 +130,7 @@ export async function sendData(id: string) {
         socket.emit('era-data', eraData);
       }
       else {
-        await setStartDate(era.level, new Date())
+        await setStartDate(era.level, new Date());
         maxClicks = era.salo;
         const eraData: eraPayload = {
           totalScore,
