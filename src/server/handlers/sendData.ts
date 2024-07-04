@@ -80,6 +80,7 @@ export async function sendData(id: string) {
   }
   const remainingClicks = maxClicks - currentClicks;
   const totalScore = await getTotalScoreCache();
+  console.log("total Score", totalScore);
 
   if(era){
     
