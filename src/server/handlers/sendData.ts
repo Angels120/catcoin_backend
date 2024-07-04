@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
-import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime } from '../../cache';
+import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, getAllUserTotalScoresCache, getTotalScoreCache, resetTotalScoreCache } from '../../cache';
 import { getTeamById } from '../../models/Team';
+import { getCurrendEra, setStartDate, updateLevel } from '../../models/Era';
 import {
   BOOST_DESCRIPTIONS,
   BOOST_EMOTES,
@@ -20,7 +21,7 @@ import {
   getUserTotalScore,
   setUserTotalScore,
 } from '../../service/main';
-import { MAX_CLICKS_PER_DAY, userSockets } from '../../utils/constants';
+import { MAX_CLICKS_PER_DAY, userSockets, MAX_CLICKS_PER_ERA, HALVING_PERIOD } from '../../utils/constants';
 import { getUserAvatar } from '../../bot';
 import { getActiveTasks } from '../../models/Task';
 import { getRank } from './rank';
@@ -32,6 +33,15 @@ type Payload = {
   clickRegen: number;
   balance: number;
 };
+
+type eraPayload = {
+  level: number;
+  description: string;
+  salo: number;
+  rate: number;
+  totalScore: number;
+  isActive: boolean;
+}
 
 type TeamPayload = {
   id: string | Types.ObjectId;
@@ -53,8 +63,10 @@ export async function sendData(id: string) {
   const score = await getUserTotalScore(id.toString());
   const balance = await getUserBalance(id.toString());
   const rank = getRank(score, 'user');
+  const era = await getCurrendEra();
   let clickValue = 1;
   let maxClicks = MAX_CLICKS_PER_DAY;
+  
   let clickRegen = 1;
   const boosts = await getUsersBoosts(id.toString());
   for (const boost of boosts) {
@@ -67,6 +79,71 @@ export async function sendData(id: string) {
     }
   }
   const remainingClicks = maxClicks - currentClicks;
+  const totalScore = await getTotalScoreCache();
+
+  if(era){
+    
+    if(era.startDate != undefined){
+      const current = new Date();
+      if((parseInt(current.toString()) - parseInt(era.startDate.toString())) > 1000 * 3600 * HALVING_PERIOD){
+        const updateEra = await updateLevel();
+        if(updateEra){
+          await resetTotalScoreCache();
+          maxClicks = updateEra.salo;
+          const eraData: eraPayload = {
+            totalScore,
+            level : updateEra.level,
+            rate : updateEra.rate,
+            salo : updateEra.salo,
+            description : updateEra?.description,
+            isActive: true
+          };
+          socket.emit('era-data', eraData);
+        }
+      }
+      else {
+        maxClicks = era.salo;
+        const eraData: eraPayload = {
+          totalScore,
+          level : era.level,
+          rate : era.rate,
+          salo : era.salo,
+          description : era?.description,
+          isActive: false
+        };
+        socket.emit('era-data', eraData);
+      }
+      
+    }
+    else {
+      if(totalScore < MAX_CLICKS_PER_ERA){
+        maxClicks = era.salo;
+        const eraData: eraPayload = {
+          totalScore,
+          level : era.level,
+          rate : era.rate,
+          salo : era.salo,
+          description : era?.description,
+          isActive: true
+        };
+        socket.emit('era-data', eraData);
+      }
+      else {
+        await setStartDate(era.level, new Date())
+        maxClicks = era.salo;
+        const eraData: eraPayload = {
+          totalScore,
+          level : era.level,
+          rate : era.rate,
+          salo : era.salo,
+          description : era?.description,
+          isActive: false
+        };
+        socket.emit('era-data', eraData);
+      }
+    }
+  }
+  
 
   // Initialize payload with user-specific data
   const payload: Payload = {
@@ -78,7 +155,7 @@ export async function sendData(id: string) {
     balance,
   };
 
-  // Add team data if user is part of a team
+
 
   // Emit consolidated data payload
   socket.emit('user-data', payload);
@@ -99,16 +176,20 @@ export async function sendRemainingClicks(id: string) {
     sendRemainingClicks = 1000;
   }
   else {
+
     const date1 = new Date(last_update_time);
     const date2 = new Date(currentTime);
     console.log("last_update: ", last_update_time);
     console.log("current: ", currentTime);
-
+    const era = await getCurrendEra();
+    if(era){
+      const differenceInSeconds = (parseInt(currentTime) - parseInt(last_update_time)) / 1000;
+      const temp = remainingClicks - currentClicks + ( differenceInSeconds / era.rate );
+      console.log("remaing temp", differenceInSeconds);
+      sendRemainingClicks = Math.min(Math.round(temp), 1000);
+    }
     // Calculate the difference in milliseconds and convert to seconds
-    const differenceInSeconds = (parseInt(currentTime) - parseInt(last_update_time)) / 1000;
-    const temp = remainingClicks - currentClicks + ( differenceInSeconds / 4 );
-    console.log("remaing temp", differenceInSeconds);
-    sendRemainingClicks = Math.min(Math.round(temp), 1000);
+    
   }
   console.log("Reaminig Clicks: ", sendRemainingClicks);
   socket.emit('init-remaingClicks', sendRemainingClicks);

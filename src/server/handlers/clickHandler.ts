@@ -6,10 +6,12 @@ import {
   incrementUserBalance,
   setUserClicks,
   setUserReamingClicks,
-  setLastUpdateTime
+  setLastUpdateTime,
+  getTotalScoreCache,
+  incrementTotalScore
 } from '../../cache';
 import { getUserTotalScore } from '../../service/main';
-import { MAX_CLICKS_PER_DAY, userSockets } from '../../utils/constants';
+import { MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
 import { redis } from '../../utils/redis';
 import { sendData } from './sendData';
 import { getUserByUserId } from '../../models/User';
@@ -74,8 +76,13 @@ export async function handleUserClick(userId: string, clickCount: number, remain
       clickValue
     );
 
+    
+    const totalScore = await getTotalScoreCache();
+    if(totalScore + clickCount * clickValue > MAX_CLICKS_PER_ERA) {
+      clickCount = MAX_CLICKS_PER_ERA - totalScore;
+    }
     incrementUserBalance(userId, clickCount * clickValue);
-
+    incrementTotalScore(clickCount * clickValue);
     setUserClicks(userId, clickCount * clickValue);
     setUserReamingClicks(userId, remaingClicks);
     setLastUpdateTime(userId);

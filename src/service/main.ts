@@ -11,6 +11,7 @@ import {
   setUserBoostsCache,
   setUserIdsCache,
   setUserTotalScoreCache,
+  setTotalScoreCache
 } from '../cache';
 import {
   addCompletedTask,
@@ -170,6 +171,17 @@ export async function setUserTotalScore(id: number | string) {
   const score = user.score;
   await setUserTotalScoreCache(id.toString(), score);
   return score;
+}
+
+export async function setTotalScore() {
+  const allUserstotalScore = await getAllUserTotalScoresCache();
+  const totalScores = Object.values(allUserstotalScore);
+  let totalScore = 0;
+  for (const score of totalScores){
+    const temp = parseInt(score);
+    totalScore += temp;
+  }
+  await setTotalScoreCache(totalScore);
 }
 
 export async function getUserRankNumber(score: number) {

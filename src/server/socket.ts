@@ -10,6 +10,7 @@ import {
   handleBotEvent,
   revalidateCache,
   setUserTotalScore,
+  setTotalScore,
   top10TeamsExpensive,
 } from '../service/main';
 import { handleUserClick } from './handlers/clickHandler';
