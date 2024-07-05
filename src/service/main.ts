@@ -42,29 +42,6 @@ export type Events = 'invite';
 const GROUP_CHAT_ID = env['GROUP_CHAT_ID'];
 const GROUP_CHAT_ID_2 = env['GROUP_CHAT_ID_2'];
 
-redis.client.on('message', async (channel, message) => {
-	if (channel === "totalScoreUpdate") {
-	  const totalScore = parseInt(message, 10);
-	  if (totalScore >= MAX_CLICKS_PER_ERA) {
-      console.log(`Total score has reached or exceeded the maximum threshold: ${totalScore}`);
-      const era = await getCurrentEra();
-      if(era){
-        await setStartDate(era.level, new Date());
-        setTimeout(async () => {
-          await updateLevel();
-          await setTotalScoreCache(0);
-          const users = await getAllUsers();
-          for(const user of users){
-            await setUserTotalScoreCache(user.id.toString(), 0);
-          }
-        })
-      }
-      
-      // Perform your event/action here, e.g., sending a notification or triggering an alert
-	  }
-	}
-});
-
 
 export async function handleBotEvent(event: Events, userId: number) {
   try {

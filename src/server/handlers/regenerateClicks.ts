@@ -1,5 +1,7 @@
-import { getUserClicks, getUserIdsCache, setUserClicks, getUsersBoostsCache } from '../../cache';
-import { MAX_CLICKS_PER_DAY, userSockets } from '../../utils/constants';
+import { getUserClicks, getUserIdsCache, setUserClicks, getUsersBoostsCache, getTotalScoreCache, setTotalScoreCache, setUserTotalScoreCache } from '../../cache';
+import { getCurrentEra, setStartDate, updateLevel } from '../../models/Era';
+import { getAllUsers } from '../../models/User';
+import { MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
 // 2 minutes
 const CLICK_REGENERATION_INTERVAL = 60 * 1000;
 export function startClickRegeneration() {
@@ -8,6 +10,32 @@ export function startClickRegeneration() {
       await regenerateClicksForAllUsers();
     } catch (error) {
       console.error('Error regenerating clicks:', error);
+    }
+  }, CLICK_REGENERATION_INTERVAL);
+}
+
+export function monitorTotalScore() {
+  setInterval(async () => {
+    try {
+      const totalScore = await getTotalScoreCache();
+      if(totalScore >= MAX_CLICKS_PER_ERA){
+        const era = await getCurrentEra();
+        if(era){
+          await setStartDate(era.level, new Date());
+          await setTotalScoreCache(0);
+          setTimeout(async () => {
+            await updateLevel();
+            
+            const users = await getAllUsers();
+            for(const user of users){
+              await setUserTotalScoreCache(user.id.toString(), 0);
+            }
+          })
+        }
+      }
+    }
+    catch (error) {
+      console.log("Monitoring Error : ", error);
     }
   }, CLICK_REGENERATION_INTERVAL);
 }

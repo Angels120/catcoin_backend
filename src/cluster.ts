@@ -2,7 +2,7 @@ import cluster from 'cluster';
 import os from 'os';
 import dotenv from 'dotenv';
 
-import { startClickRegeneration } from './server/handlers/regenerateClicks';
+import { startClickRegeneration, monitorTotalScore } from './server/handlers/regenerateClicks';
 import { startBot } from './botServer';
 
 // Load environment variables
@@ -36,6 +36,7 @@ function startTheApp() {
   }
 }
 // startClickRegeneration();
+monitorTotalScore();
 startBot();
 startTheApp();
 // startApp();
