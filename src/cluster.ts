@@ -35,7 +35,7 @@ function startTheApp() {
     }
   }
 }
-startClickRegeneration();
+// startClickRegeneration();
 startBot();
 startTheApp();
 // startApp();

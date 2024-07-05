@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, getAllUserTotalScoresCache, getTotalScoreCache, resetTotalScoreCache } from '../../cache';
+import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, getAllUserTotalScoresCache, getTotalScoreCache, resetTotalScoreCache, setUserTotalScoreCache } from '../../cache';
 import { getTeamById } from '../../models/Team';
 import { getCurrendEra, setStartDate, updateLevel } from '../../models/Era';
 import {
@@ -88,6 +88,7 @@ export async function sendData(id: string) {
       const current = new Date();
       if((parseInt(current.toString()) - parseInt(era.startDate.toString())) > 1000 * 3600 * HALVING_PERIOD){
         const updateEra = await updateLevel();
+        await setUserTotalScoreCache(id.toString(), 0);
         if(updateEra){
           await resetTotalScoreCache();
           maxClicks = updateEra.salo;
@@ -174,27 +175,29 @@ export async function sendRemainingClicks(id: string) {
   const currentClicks = await getUserClicks(id.toString());
   const currentTime = Date.now().toString();
   let sendRemainingClicks = 0;
-  if(last_update_time == "0"){
-    sendRemainingClicks = 1000;
-  }
-  else {
-
-    const date1 = new Date(last_update_time);
-    const date2 = new Date(currentTime);
-    console.log("last_update: ", last_update_time);
-    console.log("current: ", currentTime);
-    const era = await getCurrendEra();
-    if(era){
+  const era = await getCurrendEra();
+  if(era){
+    if(last_update_time == "0"){
+      sendRemainingClicks = era.salo;
+    }
+    else {
+  
+      const date1 = new Date(last_update_time);
+      const date2 = new Date(currentTime);
+      console.log("last_update: ", last_update_time);
+      console.log("current: ", currentTime);
+      
       const differenceInSeconds = (parseInt(currentTime) - parseInt(last_update_time)) / 1000;
       const temp = remainingClicks - currentClicks + ( differenceInSeconds / era.rate );
       console.log("remaing temp", differenceInSeconds);
-      sendRemainingClicks = Math.min(Math.round(temp), 1000);
+      sendRemainingClicks = Math.min(Math.round(temp), era.salo);
+      // Calculate the difference in milliseconds and convert to seconds
+      
     }
-    // Calculate the difference in milliseconds and convert to seconds
-    
+    console.log("Reaminig Clicks: ", sendRemainingClicks);
+    socket.emit('init-remaingClicks', sendRemainingClicks);
   }
-  console.log("Reaminig Clicks: ", sendRemainingClicks);
-  socket.emit('init-remaingClicks', sendRemainingClicks);
+  
 }
 
 export async function sendJoinedTeamData(id: string) {
