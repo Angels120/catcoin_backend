@@ -15,7 +15,7 @@ export async function startBot() {
     await initTeams();
     await initializeDefaultTasks();
     await initializeDefaultEras();
-    await setTotalScore()
+    await setTotalScore();
     runDailyReset();
     console.log('Telegram bot started');
   } catch (err) {
