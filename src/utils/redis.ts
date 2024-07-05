@@ -18,11 +18,3 @@ const client = new Redis(REDIS_HOST); // Connect to 127.0.0.1:6379 as default
 export const redis = {
 	client,
 };
-
-client.subscribe("totalScoreUpdate", (err, count) => {
-	if (err) {
-		console.error('Failed to subscribe: ', err.message);
-	} else {
-		console.log(`Subscribed to ${count} channel(s).`);
-	}
-});
