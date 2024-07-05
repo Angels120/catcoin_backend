@@ -103,7 +103,7 @@ export async function sendData(id: string) {
         rate : era.rate,
         salo : era.salo,
         description : era?.description,
-        isActive: false
+        isActive: true
       };
       socket.emit('era-data', eraData);
     }
