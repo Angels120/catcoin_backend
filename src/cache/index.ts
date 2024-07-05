@@ -88,9 +88,9 @@ export async function resetTotalScoreCache() {
 }
 
 export async function getTotalScoreCache() {
-  const totalScore = redis.client.get('total_score');
+  const totalScore = await redis.client.get('total_score');
   console.log("cache:", totalScore);
-  return totalScore !== null ? parseInt(totalScore.toString()) : 0;
+  return totalScore !== null ? parseInt(totalScore.toString(), 10) : 0;
 }
 
 
