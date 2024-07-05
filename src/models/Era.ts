@@ -86,7 +86,7 @@ const defaultEras = [
   },
 ];
 
-export async function getCurrendEra() {
+export async function getCurrentEra() {
   return Era.findOne({ isActive: true });
 }
 

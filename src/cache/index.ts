@@ -57,7 +57,8 @@ export async function incrementUserBalance(userId: string, incrementAmount: numb
   redis.client.hincrby('user_balance', `userId:${userId}`, incrementAmount);
 }
 export async function incrementTotalScore(incrementAmount: number) {
-  redis.client.incrby('total_score', incrementAmount);
+  const newScore = await redis.client.incrby('total_score', incrementAmount);
+  await redis.client.publish('totalScoreUpdate', newScore.toString());
 }
 
 export async function setUserBalance(userId: string, balance: number) {
@@ -80,11 +81,8 @@ export async function setUserTotalScoreCache(userId: string, score: number) {
 }
 
 export async function setTotalScoreCache(totalScore: number) {
-  redis.client.set('total_score', totalScore);
-}
-
-export async function resetTotalScoreCache() {
-  redis.client.set('total_score', 0);
+  await redis.client.set('total_score', totalScore);
+  await redis.client.publish("totalScoreUpdate", totalScore.toString());
 }
 
 export async function getTotalScoreCache() {

@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, getAllUserTotalScoresCache, getTotalScoreCache, resetTotalScoreCache, setUserTotalScoreCache } from '../../cache';
+import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, setTotalScoreCache, getTotalScoreCache, setUserTotalScoreCache } from '../../cache';
 import { getTeamById } from '../../models/Team';
-import { getCurrendEra, setStartDate, updateLevel } from '../../models/Era';
+import { getCurrentEra, setStartDate, updateLevel } from '../../models/Era';
 import {
   BOOST_DESCRIPTIONS,
   BOOST_EMOTES,
@@ -63,7 +63,7 @@ export async function sendData(id: string) {
   const score = await getUserTotalScore(id.toString());
   const balance = await getUserBalance(id.toString());
   const rank = getRank(score, 'user');
-  const era = await getCurrendEra();
+  const era = await getCurrentEra();
   let clickValue = 1;
   let maxClicks = MAX_CLICKS_PER_DAY;
   
@@ -83,67 +83,29 @@ export async function sendData(id: string) {
   console.log("total Score", totalScore);
 
   if(era){
-    
-    if(era.startDate != null){
-      const current = new Date();
-      if((parseInt(current.toString()) - parseInt(era.startDate.toString())) > 1000 * 3600 * HALVING_PERIOD){
-        const updateEra = await updateLevel();
-        await setUserTotalScoreCache(id.toString(), 0);
-        if(updateEra){
-          await resetTotalScoreCache();
-          maxClicks = updateEra.salo;
-          const eraData: eraPayload = {
-            totalScore,
-            level : updateEra.level,
-            rate : updateEra.rate,
-            salo : updateEra.salo,
-            description : updateEra?.description,
-            isActive: true
-          };
-          socket.emit('era-data', eraData);
-        }
-      }
-      else {
-        maxClicks = era.salo;
-        const eraData: eraPayload = {
-          totalScore,
-          level : era.level,
-          rate : era.rate,
-          salo : era.salo,
-          description : era?.description,
-          isActive: false
-        };
-        socket.emit('era-data', eraData);
-      }
-      
+    if(era.startDate != null) {
+      maxClicks = era.salo;
+      const eraData: eraPayload = {
+        totalScore,
+        level : era.level,
+        rate : era.rate,
+        salo : era.salo,
+        description : era?.description,
+        isActive: false
+      };
+      socket.emit('era-data', eraData);
     }
     else {
-      if(totalScore < MAX_CLICKS_PER_ERA){
-        maxClicks = era.salo;
-        const eraData: eraPayload = {
-          totalScore,
-          level : era.level,
-          rate : era.rate,
-          salo : era.salo,
-          description : era?.description,
-          isActive: true
-        };
-        console.log("eraData", eraData);
-        socket.emit('era-data', eraData);
-      }
-      else {
-        await setStartDate(era.level, new Date());
-        maxClicks = era.salo;
-        const eraData: eraPayload = {
-          totalScore,
-          level : era.level,
-          rate : era.rate,
-          salo : era.salo,
-          description : era?.description,
-          isActive: false
-        };
-        socket.emit('era-data', eraData);
-      }
+      maxClicks = era.salo;
+      const eraData: eraPayload = {
+        totalScore,
+        level : era.level,
+        rate : era.rate,
+        salo : era.salo,
+        description : era?.description,
+        isActive: false
+      };
+      socket.emit('era-data', eraData);
     }
   }
   
@@ -175,7 +137,7 @@ export async function sendRemainingClicks(id: string) {
   const currentClicks = await getUserClicks(id.toString());
   const currentTime = Date.now().toString();
   let sendRemainingClicks = 0;
-  const era = await getCurrendEra();
+  const era = await getCurrentEra();
   if(era){
     if(last_update_time == "0"){
       sendRemainingClicks = era.salo;
