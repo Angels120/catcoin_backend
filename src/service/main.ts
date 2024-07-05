@@ -181,6 +181,7 @@ export async function setTotalScore() {
     const temp = parseInt(score);
     totalScore += temp;
   }
+  console.log("total:", totalScore);
   await setTotalScoreCache(totalScore);
 }
 
