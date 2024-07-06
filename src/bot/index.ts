@@ -55,8 +55,6 @@ export const getUserAvatar = async (userId: number) => {
     if (user.total_count === 0) {
       return undefined;
     }
-    const chat = await baseBot.api.getChatMember(-1002184357008, userId);
-    console.log("check join chat : ", chat.status);
     const fileId = user.photos[0][0].file_id;
     const file = await baseBot.api.getFile(fileId);
     const url = `https://api.telegram.org/file/bot${token}/${file.file_path}`;
