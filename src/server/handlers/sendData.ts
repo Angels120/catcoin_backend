@@ -315,7 +315,6 @@ export async function sendUsersWithBalance(userId: string) {
     //   return {username, score, id, avatar};
     // });
     
-    console.log("users", usersWithBalance);
     socket.emit('users', usersWithBalance);
   } catch (error) {
     console.error('Error getting users with status:', error);
