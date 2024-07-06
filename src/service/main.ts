@@ -178,12 +178,12 @@ export async function setUserTotalScore(id: number | string) {
 }
 
 export async function setTotalScore() {
-  const allUserstotalScore = await getAllUserTotalScoresCache();
-  const totalScores = Object.values(allUserstotalScore);
+  // const allUserstotalScore = await getAllUserTotalScoresCache();
+  // const totalScores = Object.values(allUserstotalScore);
+  const users = await getAllUsers();
   let totalScore = 0;
-  console.log("score: ", allUserstotalScore);
-  for (const score of totalScores){
-    const temp = parseInt(score);
+  for (const user of users){
+    const temp = user.score;
     totalScore += temp;
   }
   console.log("total:", totalScore);
