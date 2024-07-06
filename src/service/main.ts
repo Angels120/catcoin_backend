@@ -181,9 +181,9 @@ export async function setTotalScore() {
   const allUserstotalScore = await getAllUserTotalScoresCache();
   const totalScores = Object.values(allUserstotalScore);
   let totalScore = 0;
+  console.log("score: ", totalScores);
   for (const score of totalScores){
     const temp = parseInt(score);
-    console.log("score: ", temp);
     totalScore += temp;
   }
   console.log("total:", totalScore);
