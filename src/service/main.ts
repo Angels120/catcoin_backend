@@ -183,6 +183,7 @@ export async function setTotalScore() {
   let totalScore = 0;
   for (const score of totalScores){
     const temp = parseInt(score);
+    console.log("score: ", temp);
     totalScore += temp;
   }
   console.log("total:", totalScore);
