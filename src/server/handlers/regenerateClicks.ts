@@ -37,7 +37,7 @@ export function monitorTotalScore() {
             }
             await setTotalScoreCache(0);
             monitorTotalScore();
-          }, HALVING_PERIOD * 1000);
+          }, HALVING_PERIOD * 1000 * 60 * 60);
         }
       }
     }
