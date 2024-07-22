@@ -24,6 +24,7 @@ function startTheApp() {
         // Optionally, you can restart a worker when it dies
         cluster.fork();
       });
+      monitorTotalScore();
     } else {
       // Workers can share any TCP connection.
       // In this case, it is an HTTP server.
@@ -36,7 +37,7 @@ function startTheApp() {
   }
 }
 // startClickRegeneration();
-monitorTotalScore();
+
 startBot();
 startTheApp();
 // startApp();
