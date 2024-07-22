@@ -8,7 +8,8 @@ import {
   setUserReamingClicks,
   setLastUpdateTime,
   getTotalScoreCache,
-  incrementTotalScore
+  incrementTotalScore,
+  setUserTotalScoreCache
 } from '../../cache';
 import { getUserTotalScore } from '../../service/main';
 import { MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
@@ -89,4 +90,11 @@ export async function handleUserClick(userId: string, clickCount: number, remain
 
     sendData(userId);
   } catch (e) {}
+}
+
+export async function handleClaim(userId: string): Promise<void> {
+  try {
+    setUserTotalScoreCache(userId, 0);
+    sendData(userId);
+  } catch (error) {}
 }

@@ -13,7 +13,7 @@ import {
   setTotalScore,
   top10TeamsExpensive,
 } from '../service/main';
-import { handleUserClick } from './handlers/clickHandler';
+import { handleUserClick, handleClaim } from './handlers/clickHandler';
 import { updateSingleUserScoreInDb } from './handlers/batchScoreUpdate';
 import {
   sendRemainingClicks,
@@ -124,6 +124,12 @@ io.on('connection', async (socket: Socket) => {
       handleUserClick(id, clickCount, remaingClicks);
     } catch (error) {}
   });
+
+  socket.on('claim', () => {
+    try {
+      handleClaim(id);
+    } catch (error) {}
+  })
 
   socket.on('teams-data', () => {
     try {
