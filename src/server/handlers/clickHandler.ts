@@ -9,13 +9,14 @@ import {
   setLastUpdateTime,
   getTotalScoreCache,
   incrementTotalScore,
-  setUserTotalScoreCache
+  setUserTotalScoreCache,
+  resetScore
 } from '../../cache';
 import { getUserTotalScore } from '../../service/main';
 import { MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
 import { redis } from '../../utils/redis';
 import { sendData } from './sendData';
-import { getUserByUserId } from '../../models/User';
+import { getUserByUserId, resetDbScore } from '../../models/User';
 
 let luaScriptSha1: string;
 
@@ -95,6 +96,8 @@ export async function handleUserClick(userId: string, clickCount: number, remain
 export async function handleClaim(userId: string): Promise<void> {
   try {
     setUserTotalScoreCache(userId, 0);
+    resetScore(userId);
+    resetDbScore(userId);
     sendData(userId);
   } catch (error) {}
 }

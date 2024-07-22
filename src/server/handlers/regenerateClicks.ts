@@ -1,7 +1,7 @@
 import { clearInterval } from 'node:timers';
-import { getUserClicks, getUserIdsCache, setUserClicks, getUsersBoostsCache, getTotalScoreCache, setTotalScoreCache, setUserTotalScoreCache } from '../../cache';
+import { getUserClicks, getUserIdsCache, setUserClicks, getUsersBoostsCache, getTotalScoreCache, setTotalScoreCache, setUserTotalScoreCache, resetScore } from '../../cache';
 import { getCurrentEra, setStartDate, updateLevel } from '../../models/Era';
-import { getAllUsers, resetScore } from '../../models/User';
+import { getAllUsers, resetDbScore } from '../../models/User';
 import { HALVING_PERIOD, MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
 // 2 minutes
 const CLICK_REGENERATION_INTERVAL = 60 * 1000;
@@ -27,10 +27,11 @@ export function monitorTotalScore() {
         if(era){
           await setStartDate(era.level, new Date());
           setTimeout(async () => {
+            console.log("update level");
             await updateLevel();
-            
             const users = await getAllUsers();
             for(const user of users){
+              await resetDbScore(user.id.toString());
               await setUserTotalScoreCache(user.id.toString(), 0);
               await resetScore(user.id.toString());
             }

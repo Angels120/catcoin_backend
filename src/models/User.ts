@@ -362,7 +362,7 @@ export async function incrementScore(id: number | string, incrementAmount: numbe
   }
 }
 
-export async function resetScore(id: number | string) {
+export async function resetDbScore(id: number | string) {
   try {
     return await User.findOneAndUpdate(
       { id },
