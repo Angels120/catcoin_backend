@@ -61,6 +61,7 @@ export async function sendData(id: string) {
   const currentClicks = await getUserClicks(id.toString());
 
   const score = await getUserTotalScore(id.toString());
+  console.log("send score: ", score);
   const balance = await getUserBalance(id.toString());
   const rank = getRank(score, 'user');
   const era = await getCurrentEra();

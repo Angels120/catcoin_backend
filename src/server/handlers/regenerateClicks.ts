@@ -33,6 +33,7 @@ export function monitorTotalScore() {
             const users = await getAllUsers();
             for(const user of users){
               await setUserTotalScoreCache(user.id.toString(), 0);
+              console.log(user.id);
             }
             await setTotalScoreCache(0);
             monitorTotalScore();
