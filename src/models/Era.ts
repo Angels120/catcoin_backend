@@ -121,17 +121,20 @@ export async function setStartDate(level: number, startDate: Date) {
 
 export async function updateLevel() {
   try {
-    const currnetEra = await Era.findOneAndUpdate(
+    const currentEra = await Era.findOneAndUpdate(
       { isActive : true },
       { isActive : false },
       {
-        upsert: true,
         new: true,
       }
     );
-    console.log("current level", currnetEra.level);
+    if (!currentEra) {
+      console.error("No active era found");
+      return null;
+    }
+    console.log("current level", currentEra.level);
     return await Era.findOneAndUpdate(
-      { level : currnetEra.level + 1 },
+      { level : currentEra.level + 1 },
       { isActive : true },
       {
         upsert: true,
