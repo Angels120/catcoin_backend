@@ -362,6 +362,21 @@ export async function incrementScore(id: number | string, incrementAmount: numbe
   }
 }
 
+export async function resetScore(id: number | string) {
+  try {
+    return await User.findOneAndUpdate(
+      { id },
+      { score : 0 },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+  } catch (err) {
+    return null;
+  }
+}
+
 export async function getUserByUserId(id: number | string) {
   try {
     const user = await User.findOne({ id });

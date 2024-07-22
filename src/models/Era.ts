@@ -129,6 +129,7 @@ export async function updateLevel() {
         new: true,
       }
     );
+    console.log("current level", currnetEra.level);
     return await Era.findOneAndUpdate(
       { level : currnetEra.level + 1 },
       { isActive : true },
