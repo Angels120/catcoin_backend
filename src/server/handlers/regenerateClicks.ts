@@ -1,3 +1,4 @@
+import { clearInterval } from 'node:timers';
 import { getUserClicks, getUserIdsCache, setUserClicks, getUsersBoostsCache, getTotalScoreCache, setTotalScoreCache, setUserTotalScoreCache } from '../../cache';
 import { getCurrentEra, setStartDate, updateLevel } from '../../models/Era';
 import { getAllUsers } from '../../models/User';
@@ -17,14 +18,15 @@ export function startClickRegeneration() {
 }
 
 export function monitorTotalScore() {
-  setInterval(async () => {
+  const monitor = setInterval(async () => {
     try {
       const totalScore = await getTotalScoreCache();
+      console.log("monitor: ", totalScore);
       if(totalScore >= MAX_CLICKS_PER_ERA){
+        clearInterval(monitor);
         const era = await getCurrentEra();
         if(era){
           await setStartDate(era.level, new Date());
-          await setTotalScoreCache(0);
           setTimeout(async () => {
             await updateLevel();
             
@@ -32,14 +34,16 @@ export function monitorTotalScore() {
             for(const user of users){
               await setUserTotalScoreCache(user.id.toString(), 0);
             }
-          }, HALVING_PERIOD * 60 * 60 * 1000);
+            await setTotalScoreCache(0);
+            monitorTotalScore();
+          }, HALVING_PERIOD * 1000);
         }
       }
     }
     catch (error) {
       console.log("Monitoring Error : ", error);
     }
-  }, CLICK_REGENERATION_INTERVAL);
+  }, 1000);
 }
 
 async function regenerateClicksForAllUsers() {
