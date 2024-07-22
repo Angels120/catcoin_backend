@@ -21,7 +21,6 @@ export function monitorTotalScore() {
   const monitor = setInterval(async () => {
     try {
       const totalScore = await getTotalScoreCache();
-      console.log("monitor: ", totalScore);
       if(totalScore >= MAX_CLICKS_PER_ERA){
         clearInterval(monitor);
         const era = await getCurrentEra();
