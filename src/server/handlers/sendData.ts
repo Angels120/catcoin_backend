@@ -316,7 +316,7 @@ export async function sendUsersWithBalance(userId: string) {
     //   const avatar = getUserAvatar(id);
     //   return {username, score, id, avatar};
     // });
-    
+    usersWithBalance.sort((a, b) => b.score - a.score);
     socket.emit('users', usersWithBalance);
   } catch (error) {
     console.error('Error getting users with status:', error);
