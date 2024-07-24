@@ -406,6 +406,15 @@ export async function getAllUsers() {
   }
 }
 
+export async function fetchUsers(start: number, limit: number){
+  try {
+    const users = await User.find().sort({ score: -1 }).skip(start).limit(limit);
+    return users;
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function getTopUsersWithNonZeroScore(limit: number) {
   try {
     return await User.find({ score: { $gt: 0 } })

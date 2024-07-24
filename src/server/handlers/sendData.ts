@@ -13,7 +13,8 @@ import {
   getUserCompletedTasks,
   getUsersBoosts,
   getUsersReferredBy,
-  getAllUsers
+  getAllUsers,
+  fetchUsers
 } from '../../models/User';
 import {
   getTeamScore,
@@ -41,6 +42,7 @@ type eraPayload = {
   rate: number;
   totalScore: number;
   isActive: boolean;
+  period?:number;
 }
 
 type TeamPayload = {
@@ -53,6 +55,12 @@ type TeamPayload = {
   rank: { rank: string; image: string };
   membersCount: number;
 } | null;
+
+function getDifferenceInSeconds(date1: Date, date2: Date): number {
+  const diffInMilliseconds = date2.getTime() - date1.getTime();
+  const diffInSeconds = diffInMilliseconds / 1000;
+  return diffInSeconds;
+}
 
 export async function sendData(id: string) {
   const socket = userSockets.get(id.toString());
@@ -85,6 +93,8 @@ export async function sendData(id: string) {
 
   if(era){
     if(era.startDate != null) {
+      const currentDate = new Date();
+      const period = 240 * 3600 - getDifferenceInSeconds(currentDate, era.startDate);
       maxClicks = era.salo;
       const eraData: eraPayload = {
         totalScore,
@@ -92,7 +102,8 @@ export async function sendData(id: string) {
         rate : era.rate,
         salo : era.salo,
         description : era?.description,
-        isActive: false
+        isActive: false,
+        period : period,
       };
       socket.emit('era-data', eraData);
     }
@@ -282,12 +293,12 @@ export async function sendTasksWithStatus(userId: string) {
   }
 }
 
-export async function sendUsersWithBalance(userId: string) {
+export async function sendUsersWithBalance(userId: string, start: number, limit: number) {
   try {
     const socket = userSockets.get(userId);
     if (!socket) return; // Exit early if no socket connection
     // Fetch the users
-    const users = await getAllUsers();
+    const users = await fetchUsers(start, limit);
 
     const usersWithBalance : {
       username: string;
@@ -297,16 +308,14 @@ export async function sendUsersWithBalance(userId: string) {
     }[] = [];
 
     for(const user of users) {
-      if(user.score > 0){
-        const avatar = await getUserAvatar(user.id);
-        const userscore = await getUserTotalScore(user.id.toString());
-        usersWithBalance.push({
-          username : user.username,
-          id : user.id,
-          score : userscore,
-          avatar
-        });
-      }
+      const avatar = await getUserAvatar(user.id);
+      const userscore = await getUserTotalScore(user.id.toString());
+      usersWithBalance.push({
+        username : user.username,
+        id : user.id,
+        score : userscore,
+        avatar
+      });
     }
     // const usersWithBalance = users.filter((user) => user.score > 0)
     //   .map((user) => {
@@ -316,7 +325,6 @@ export async function sendUsersWithBalance(userId: string) {
     //   const avatar = getUserAvatar(id);
     //   return {username, score, id, avatar};
     // });
-    usersWithBalance.sort((a, b) => b.score - a.score);
     socket.emit('users', usersWithBalance);
   } catch (error) {
     console.error('Error getting users with status:', error);

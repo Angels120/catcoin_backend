@@ -26,6 +26,9 @@ export function monitorTotalScore() {
         const era = await getCurrentEra();
         if(era){
           await setStartDate(era.level, new Date());
+          userSockets.forEach((socket, userid) => {
+            socket.emit('start_halving');
+          });
           setTimeout(async () => {
             console.log("update level");
             await updateLevel();
@@ -37,6 +40,9 @@ export function monitorTotalScore() {
             }
             await setTotalScoreCache(0);
             monitorTotalScore();
+            userSockets.forEach((socket, userid) => {
+              socket.emit('end_halving');
+            });
           }, HALVING_PERIOD * 1000 * 60 * 60);
         }
       }
