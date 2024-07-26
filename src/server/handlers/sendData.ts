@@ -309,11 +309,10 @@ export async function sendUsersWithBalance(userId: string, start: number, limit:
 
     for(const user of users) {
       const avatar = await getUserAvatar(user.id);
-      const userscore = await getUserTotalScore(user.id.toString());
       usersWithBalance.push({
         username : user.username,
         id : user.id,
-        score : userscore,
+        score : user.score,
         avatar
       });
     }
