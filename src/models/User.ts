@@ -408,7 +408,7 @@ export async function getAllUsers() {
 
 export async function fetchUsers(start: number, limit: number){
   try {
-    const users = await User.find({ score: { $gt: 0 } }).sort({ score: -1 }).skip(start).limit(limit).exec();
+    const users = await User.find().sort({ score: -1, _id: 1 }).skip(start).limit(limit).exec();
     return users;
   } catch (error) {
     return [];
