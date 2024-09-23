@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types, ResolveTimestamps } from 'mongoose';
 import { getUsersBoostsCache, setUserBoostsCache } from '../cache';
 import { getDailyTasks } from './Task';
 
@@ -133,7 +133,7 @@ const userSchema = new Schema<IUser>({
         type: Number,
       },
     },
-  ],
+  ]
 });
 
 const User = model<IUser>('User', userSchema);
@@ -445,5 +445,14 @@ export async function getTopUsersWithNonZeroScoreWithTeam(
       .limit(limit);
   } catch (err) {
     return [];
+  }
+}
+
+export async function getTotalUsersLength() {
+  try {
+    const users =  await User.find({});
+    return users.length;
+  } catch (error) {
+    return 0;
   }
 }

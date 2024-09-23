@@ -2,6 +2,7 @@ import { Server, createServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { userSockets } from '../utils/constants';
 import { BoostType, getTopUsersWithNonZeroScoreWithTeam, getUserByUserId } from '../models/User';
+import { logUserInteraction, getMonthlyUsers } from '../models/Statistics';
 import {
   Events,
   buyBoost,
@@ -22,7 +23,10 @@ import {
   sendFriendsData,
   sendJoinedTeamData,
   sendTasksWithStatus,
-  sendUsersWithBalance
+  sendUsersWithBalance,
+  sendActiveUsers,
+  sendMonthlyUsers,
+  sendTotalUsers
 } from './handlers/sendData';
 import { env } from 'process';
 import {
@@ -101,7 +105,10 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
-
+  await sendActiveUsers();
+  await sendMonthlyUsers(id);
+  await sendTotalUsers(id);
+  await logUserInteraction(id);
   //setting total score to cache
   await updateSingleUserScoreInDb(id);
   await setUserTotalScore(user.id);
@@ -116,6 +123,7 @@ io.on('connection', async (socket: Socket) => {
       await updateSingleUserScoreInDb(id);
 
       userSockets.delete(id);
+      await sendActiveUsers();
     } catch (error) {}
   });
 

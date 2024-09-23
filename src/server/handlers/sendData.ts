@@ -14,7 +14,8 @@ import {
   getUsersBoosts,
   getUsersReferredBy,
   getAllUsers,
-  fetchUsers
+  fetchUsers,
+  getTotalUsersLength
 } from '../../models/User';
 import {
   getTeamScore,
@@ -26,6 +27,7 @@ import { MAX_CLICKS_PER_DAY, userSockets, MAX_CLICKS_PER_ERA, HALVING_PERIOD } f
 import { getUserAvatar } from '../../bot';
 import { getActiveTasks } from '../../models/Task';
 import { getRank } from './rank';
+import { getMonthlyUsers } from '../../models/Statistics';
 type Payload = {
   maxClicks: number;
   score: number;
@@ -328,5 +330,41 @@ export async function sendUsersWithBalance(userId: string, start: number, limit:
   } catch (error) {
     console.error('Error getting users with status:', error);
     throw error; // Rethrow or handle as needed
+  }
+}
+
+export async function sendTotalUsers(userId: string) {
+  try {
+    const socket = userSockets.get(userId);
+    const totalUsers = await getTotalUsersLength();
+    socket?.emit('total', totalUsers);
+  } catch (error) {
+    console.error('Error getting totalUsers Length:', error);
+    throw error; // Rethrow or handle as needed
+  }
+  
+}
+
+
+export async function sendMonthlyUsers(userId: string) {
+  try {
+    const socket = userSockets.get(userId);
+    const monthlyUsers = await getMonthlyUsers();
+    socket?.emit('monthly', monthlyUsers);
+  } catch (error) {
+    console.error('Error getting MonthlyUsers Length:', error);
+    throw error; // Rethrow or handle as needed
+  }
+  
+}
+
+export async function sendActiveUsers() {
+  try {
+    const activeUsers = userSockets.size;
+    userSockets.forEach((socket, userId) => {
+      socket.emit('active', activeUsers);
+    });
+  } catch (error) {
+    
   }
 }
