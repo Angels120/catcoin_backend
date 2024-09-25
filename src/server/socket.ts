@@ -105,6 +105,7 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
+  console.log(userSockets.size);
   
   await logUserInteraction(id);
   await sendActiveUsers();

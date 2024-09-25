@@ -349,7 +349,6 @@ export async function sendTotalUsers(userId: string) {
 export async function sendMonthlyUsers(userId: string) {
   try {
     const socket = userSockets.get(userId);
-    console.log("========", socket);
     const monthlyUsers = await getMonthlyUsers();
     socket?.emit('monthly', monthlyUsers);
   } catch (error) {
@@ -362,7 +361,6 @@ export async function sendMonthlyUsers(userId: string) {
 export async function sendActiveUsers() {
   try {
     const activeUsers = userSockets.size;
-    console.log("socket size: ", activeUsers);
     userSockets.forEach((socket, userId) => {
       socket.emit('active', activeUsers);
     });
