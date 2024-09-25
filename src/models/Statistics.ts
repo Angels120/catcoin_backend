@@ -32,7 +32,7 @@ export async function getMonthlyUsers(): Promise<number> {
   const users = await Statistics.aggregate([
     {
       $match: {
-        interactionTime: {
+        lastInteraction: {
           $gte: startDate,
           $lt: endDate,
         },
