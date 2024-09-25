@@ -3,6 +3,7 @@ import { getUserClicks, getUserIdsCache, setUserClicks, getUsersBoostsCache, get
 import { getCurrentEra, setStartDate, updateLevel } from '../../models/Era';
 import { getAllUsers, resetDbScore } from '../../models/User';
 import { HALVING_PERIOD, MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
+import { broadcastEndHalving, broadcastStartHalving } from '../socket';
 // 2 minutes
 const CLICK_REGENERATION_INTERVAL = 60 * 1000;
 
@@ -26,9 +27,10 @@ export function monitorTotalScore() {
         const era = await getCurrentEra();
         if(era){
           await setStartDate(era.level, new Date());
-          userSockets.forEach((socket, userid) => {
-            socket.emit('start_halving');
-          });
+          // userSockets.forEach((socket, userid) => {
+          //   socket.emit('start_halving');
+          // });
+          broadcastStartHalving();
           setTimeout(async () => {
             console.log("update level");
             await updateLevel();
@@ -40,9 +42,11 @@ export function monitorTotalScore() {
             }
             await setTotalScoreCache(0);
             monitorTotalScore();
-            userSockets.forEach((socket, userid) => {
-              socket.emit('end_halving');
-            });
+            
+            // userSockets.forEach((socket, userid) => {
+            //   socket.emit('end_halving');
+            // });
+            broadcastEndHalving();
           }, HALVING_PERIOD * 1000 * 60 * 60);
         }
       }
