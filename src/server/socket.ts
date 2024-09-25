@@ -119,7 +119,6 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
-  console.log(userSockets.get("7314466396"));
   activeUsersCount++;
   await logUserInteraction(id);
   // await sendActiveUsers();
