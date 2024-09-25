@@ -85,19 +85,19 @@ const io = new SocketIOServer(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
-let activeUsersCount = 0
 const broadcastActiveUsersCount = () => {
   // const activeUsersCount = userSockets.size; // Count the number of active sockets
-  console.log("acitve users: ", activeUsersCount);
-  io.emit('active', activeUsersCount); // Send the count to all users
+  const activeUsers = io.sockets.sockets.size;
+  console.log("acitve users: ", activeUsers);
+  io.emit('active', activeUsers); // Send the count to all users
 };
 
 export const broadcastEndHalving = () => {
-  io.emit('end_halving', activeUsersCount); // Send the count to all users
+  io.emit('end_halving'); // Send the count to all users
 };
 
 export const broadcastStartHalving = () => {
-  io.emit('start_halving', activeUsersCount); // Send the count to all users
+  io.emit('start_halving'); // Send the count to all users
 };
 
 io.on('connection', async (socket: Socket) => {
@@ -119,7 +119,6 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
-  activeUsersCount++;
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
@@ -139,7 +138,6 @@ io.on('connection', async (socket: Socket) => {
       await updateSingleUserScoreInDb(id);
 
       userSockets.delete(id);
-      activeUsersCount--;
       // await sendActiveUsers();
       broadcastActiveUsersCount();
     } catch (error) {}
