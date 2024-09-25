@@ -105,10 +105,11 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
+  
+  await logUserInteraction(id);
   await sendActiveUsers();
   await sendMonthlyUsers(id);
   await sendTotalUsers(id);
-  await logUserInteraction(id);
   //setting total score to cache
   await updateSingleUserScoreInDb(id);
   await setUserTotalScore(user.id);
