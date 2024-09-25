@@ -86,6 +86,11 @@ const io = new SocketIOServer(httpServer, {
   },
 });
 
+const broadcastActiveUsersCount = () => {
+  const activeUsersCount = userSockets.size; // Count the number of active sockets
+  io.emit('active', activeUsersCount); // Send the count to all users
+};
+
 io.on('connection', async (socket: Socket) => {
   console.log("connected");
   const id = socket.handshake.query.id as string;
@@ -105,10 +110,11 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
-  console.log(userSockets.size);
+  console.log(userSockets.get(""));
   
   await logUserInteraction(id);
-  await sendActiveUsers();
+  // await sendActiveUsers();
+  broadcastActiveUsersCount();
   await sendMonthlyUsers(id);
   await sendTotalUsers(id);
   //setting total score to cache
@@ -125,7 +131,8 @@ io.on('connection', async (socket: Socket) => {
       await updateSingleUserScoreInDb(id);
 
       userSockets.delete(id);
-      await sendActiveUsers();
+      // await sendActiveUsers();
+      broadcastActiveUsersCount();
     } catch (error) {}
   });
 
