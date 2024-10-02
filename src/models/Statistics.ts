@@ -18,7 +18,7 @@ const Statistics = model<IStatistics>('Statistics', statisticSchema);
 
 export async function logUserInteraction(userId: number | undefined | string) {
   if (userId) {
-    const interaction = new Statistics({ userId });
+    const interaction = new Statistics({ userId, lastInteraction: Date.now() });
     await interaction.save();
   }
 }
