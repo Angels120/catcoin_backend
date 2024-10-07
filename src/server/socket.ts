@@ -90,7 +90,7 @@ const broadcastActiveUsersCount = () => {
   // const activeUsersCount = userSockets.size; // Count the number of active sockets
   const activeUsers = userSockets.size;
   console.log("acitve users: ", activeUsers);
-  io.emit('active', activeUsers); // Send the count to all users
+  io.emit('active', 4); // Send the count to all users
 };
 
 export const broadcastEndHalving = () => {
