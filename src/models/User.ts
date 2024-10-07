@@ -497,7 +497,7 @@ export async function getPlayersCountForLast8Weeks() {
           {
             $project: {
               _id: 0, // Exclude the `_id` field
-              users: { $size: '$uniquePlayers' }, // Count the unique players
+              players: { $size: '$uniquePlayers' }, // Count the unique players
             },
           },
         ])
@@ -507,7 +507,7 @@ export async function getPlayersCountForLast8Weeks() {
     // Format the data to return a result per week
     const formattedResults = weeks.map((_, index) => ({
       week: `${8 - index -1} week(s) ago`, // Format like "8 week(s) ago"
-      players: results[index][0]?.players || 0, // Default to 0 if no data
+      users: results[index][0]?.players || 0, // Default to 0 if no data
     }));
 
     return formattedResults;
