@@ -472,7 +472,7 @@ export async function getPlayersCountForLast8Weeks() {
 
     // Define the past 8 weeks ranges
     const weeks = Array.from({ length: 8 }).map((_, index) => {
-      const start = startOfWeek(subWeeks(now, index), { weekStartsOn: 1 }); // Week starts on Monday
+      const start = index==0? Date.now(): startOfWeek(subWeeks(now, index), { weekStartsOn: 1 }); // Week starts on Monday
       const end = endOfWeek(subWeeks(now, index), { weekStartsOn: 1 });
       return { start, end };
     });
