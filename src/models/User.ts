@@ -1,6 +1,7 @@
 import { Schema, model, Types, ResolveTimestamps } from 'mongoose';
 import { getUsersBoostsCache, setUserBoostsCache } from '../cache';
 import { getDailyTasks } from './Task';
+import { startOfWeek, endOfWeek, subWeeks } from 'date-fns';
 
 export interface IUser {
   _id: Types.ObjectId | string;
@@ -16,6 +17,7 @@ export interface IUser {
   boosts: { type: BoostType; level: number }[];
   completedTasks: (Types.ObjectId | string)[];
   nfts: { id: string; rareness: string; timestamp: number }[];
+  created: Date;
 }
 export type BoostType =
   | 'tapAmount'
@@ -133,7 +135,11 @@ const userSchema = new Schema<IUser>({
         type: Number,
       },
     },
-  ]
+  ],
+  created: {
+    type: Date,
+    required: true
+  }
 });
 
 const User = model<IUser>('User', userSchema);
@@ -454,5 +460,59 @@ export async function getTotalUsersLength() {
     return users.length;
   } catch (error) {
     return 0;
+  }
+}
+
+export async function getPlayersCountForLast8Weeks() {
+  try {
+    
+
+    // Get the current date
+    const now = new Date();
+
+    // Define the past 8 weeks ranges
+    const weeks = Array.from({ length: 8 }).map((_, index) => {
+      const start = startOfWeek(subWeeks(now, index + 1), { weekStartsOn: 1 }); // Week starts on Monday
+      const end = endOfWeek(subWeeks(now, index + 1), { weekStartsOn: 1 });
+      return { start, end };
+    });
+
+    // Perform aggregation to get the number of unique players per week
+    const results = await Promise.all(
+      weeks.map(({ start, end }) =>
+        User.aggregate([
+          {
+            $match: {
+              created: {
+                $lte: start
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null, // No specific grouping key
+              uniquePlayers: { $addToSet: '$id' },
+            },
+          },
+          {
+            $project: {
+              _id: 0, // Exclude the `_id` field
+              players: { $size: '$uniquePlayers' }, // Count the unique players
+            },
+          },
+        ])
+      )
+    );
+
+    // Format the data to return a result per week
+    const formattedResults = weeks.map((_, index) => ({
+      week: `${8 - index} week(s) ago`, // Format like "8 week(s) ago"
+      players: results[index][0]?.players || 0, // Default to 0 if no data
+    }));
+
+    return formattedResults;
+  } catch (error) {
+    console.error('Error fetching player data:', error);
+    throw error;
   }
 }

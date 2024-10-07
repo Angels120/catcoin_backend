@@ -15,7 +15,8 @@ import {
   getUsersReferredBy,
   getAllUsers,
   fetchUsers,
-  getTotalUsersLength
+  getTotalUsersLength,
+  getPlayersCountForLast8Weeks
 } from '../../models/User';
 import {
   getTeamScore,
@@ -27,7 +28,7 @@ import { MAX_CLICKS_PER_DAY, userSockets, MAX_CLICKS_PER_ERA, HALVING_PERIOD } f
 import { getUserAvatar } from '../../bot';
 import { getActiveTasks } from '../../models/Task';
 import { getRank } from './rank';
-import { getMonthlyUsers } from '../../models/Statistics';
+import { getLastThreeUsers } from '../../models/Statistics';
 type Payload = {
   maxClicks: number;
   score: number;
@@ -349,7 +350,7 @@ export async function sendTotalUsers(userId: string) {
 export async function sendMonthlyUsers(userId: string) {
   try {
     const socket = userSockets.get(userId);
-    const monthlyUsers = await getMonthlyUsers();
+    const monthlyUsers = await getLastThreeUsers();
     socket?.emit('monthly', monthlyUsers);
   } catch (error) {
     console.error('Error getting MonthlyUsers Length:', error);
@@ -367,4 +368,16 @@ export async function sendActiveUsers() {
   } catch (error) {
     
   }
+}
+
+export async function sendChartData(userId: string) {
+  try {
+    const socket = userSockets.get(userId);
+    const chartData = await getPlayersCountForLast8Weeks()
+    socket?.emit('chartData', chartData);
+  } catch (error) {
+    console.error('Error getting chartData:', error);
+    throw error; // Rethrow or handle as needed
+  }
+  
 }

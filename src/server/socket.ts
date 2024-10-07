@@ -2,7 +2,7 @@ import { Server, createServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { userSockets } from '../utils/constants';
 import { BoostType, getTopUsersWithNonZeroScoreWithTeam, getUserByUserId } from '../models/User';
-import { logUserInteraction, getMonthlyUsers } from '../models/Statistics';
+import { logUserInteraction } from '../models/Statistics';
 import {
   Events,
   buyBoost,
@@ -87,7 +87,7 @@ const io = new SocketIOServer(httpServer, {
 });
 const broadcastActiveUsersCount = () => {
   // const activeUsersCount = userSockets.size; // Count the number of active sockets
-  const activeUsers = io.sockets.sockets.size;
+  const activeUsers = userSockets.size;
   console.log("acitve users: ", activeUsers);
   io.emit('active', activeUsers); // Send the count to all users
 };

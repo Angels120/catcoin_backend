@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { startOfMonth, endOfMonth } from 'date-fns';
+import { startOfMonth, endOfMonth, subDays, startOfDay } from 'date-fns';
 
 
 interface IStatistics {
@@ -48,5 +48,25 @@ export async function getMonthlyUsers(): Promise<number> {
   return users.length;
 }
 
+export async function getLastThreeUsers(): Promise<number> {
+  const today = new Date();
+  const threeDaysAgo = startOfDay(subDays(today, 3));
 
+  const users = await Statistics.aggregate([
+    {
+      $match: {
+        lastInteraction: {
+          $gte: threeDaysAgo
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$userId',
+      },
+    },
+  ]);
+
+  return users.length;
+}
 
