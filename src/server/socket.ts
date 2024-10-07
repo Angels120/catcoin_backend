@@ -26,7 +26,8 @@ import {
   sendUsersWithBalance,
   sendActiveUsers,
   sendMonthlyUsers,
-  sendTotalUsers
+  sendTotalUsers,
+  sendChartData
 } from './handlers/sendData';
 import { env } from 'process';
 import {
@@ -122,6 +123,7 @@ io.on('connection', async (socket: Socket) => {
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
+  await sendChartData(id);
   await sendMonthlyUsers(id);
   await sendTotalUsers(id);
   //setting total score to cache
