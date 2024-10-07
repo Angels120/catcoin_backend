@@ -472,14 +472,17 @@ export async function getPlayersCountForLast8Weeks() {
 
     // Define the past 8 weeks ranges
     const weeks = Array.from({ length: 8 }).map((_, index) => {
-      const start = index==0? Date.now(): startOfWeek(subWeeks(now, index), { weekStartsOn: 1 }); // Week starts on Monday
-      const end = endOfWeek(subWeeks(now, index), { weekStartsOn: 1 });
-      return { start, end };
+      const currentDate = new Date();
+
+      // Calculate the date 7 weeks ago
+      const start = new Date();
+      start.setDate(currentDate.getDate() - (8 - index - 1) * 7); // 7 weeks
+      return {start};
     });
 
     // Perform aggregation to get the number of unique players per week
     const results = await Promise.all(
-      weeks.map(({ start, end }) =>
+      weeks.map(({ start }) =>
         User.aggregate([
           {
             $match: {
