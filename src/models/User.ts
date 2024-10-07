@@ -497,7 +497,7 @@ export async function getPlayersCountForLast8Weeks() {
           {
             $project: {
               _id: 0, // Exclude the `_id` field
-              players: { $size: '$uniquePlayers' }, // Count the unique players
+              users: { $size: '$uniquePlayers' }, // Count the unique players
             },
           },
         ])
