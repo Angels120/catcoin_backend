@@ -86,11 +86,12 @@ const io = new SocketIOServer(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
-const broadcastActiveUsersCount = async () => {
+const broadcastActiveUsersCount = () => {
   // const activeUsersCount = userSockets.size; // Count the number of active sockets
-  const activeUsers = await io.allSockets();
-  console.log("acitve users: ", activeUsers.size);
-  io.emit('active', activeUsers.size); // Send the count to all users
+  const activeUsers = io.engine.clientsCount;
+  // const activeUsers = userSockets.size;
+  console.log("acitve users: ", activeUsers);
+  io.emit('active', activeUsers); // Send the count to all users
 };
 
 export const broadcastEndHalving = () => {
