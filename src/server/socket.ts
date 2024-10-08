@@ -44,7 +44,6 @@ import { handleAffiliate } from './handlers/affiliate';
 
 const token = env['BOT_TOKEN'];
 const port = env['PORT'] || 3001;
-let onlineusers = 0
 
 const httpServer = createServer(async (req, res) => {
   var url = req.url;
@@ -87,11 +86,11 @@ const io = new SocketIOServer(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
-const broadcastActiveUsersCount = () => {
+const broadcastActiveUsersCount = async () => {
   // const activeUsersCount = userSockets.size; // Count the number of active sockets
-  // const activeUsers = userSockets.size;
-  console.log("acitve users: ", onlineusers);
-  io.emit('active', onlineusers); // Send the count to all users
+  const activeUsers = await io.allSockets();
+  console.log("acitve users: ", activeUsers.size);
+  io.emit('active', activeUsers.size); // Send the count to all users
 };
 
 export const broadcastEndHalving = () => {
@@ -121,7 +120,6 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
-  onlineusers++;
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
@@ -142,7 +140,6 @@ io.on('connection', async (socket: Socket) => {
       await updateSingleUserScoreInDb(id);
 
       userSockets.delete(id);
-      onlineusers--;
       // await sendActiveUsers();
       broadcastActiveUsersCount();
     } catch (error) {}
