@@ -374,7 +374,6 @@ export async function sendChartData(userId: string) {
   try {
     const socket = userSockets.get(userId);
     const chartData = await getPlayersCountForLast8Weeks();
-    console.log(chartData);
     socket?.emit('chartData', chartData);
   } catch (error) {
     console.error('Error getting chartData:', error);

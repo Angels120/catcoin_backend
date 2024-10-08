@@ -121,6 +121,9 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
+  userSockets.forEach((socket, id) => {
+    console.log('====> ', id);
+  })
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
