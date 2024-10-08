@@ -91,7 +91,7 @@ const broadcastActiveUsersCount = () => {
   const activeUsers = io.engine.clientsCount;
   // const activeUsers = userSockets.size;
   console.log("acitve users: ", activeUsers);
-  io.emit('active', activeUsers); // Send the count to all users
+  io.emit('active', 3); // Send the count to all users
 };
 
 export const broadcastEndHalving = () => {
@@ -121,9 +121,6 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
-  userSockets.forEach((socket, id) => {
-    console.log('====> ', id);
-  })
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
