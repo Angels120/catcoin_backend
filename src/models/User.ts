@@ -506,11 +506,13 @@ export async function getPlayersCountForLast8Weeks() {
         ])
       )
     );
+    const users = await User.find({});
+    const total = users.length;
 
     // Format the data to return a result per week
     const formattedResults = weeks.map((_, index) => ({
       week: `${8 - index -1} week(s) ago`, // Format like "8 week(s) ago"
-      users: results[index][0]?.players || 0, // Default to 0 if no data
+      users: index==7?total : results[index][0]?.players || 0, // Default to 0 if no data
     }));
 
     return formattedResults;
