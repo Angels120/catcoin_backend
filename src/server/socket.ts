@@ -119,8 +119,9 @@ io.on('connection', async (socket: Socket) => {
     socket.disconnect();
     return;
   }
-
+  console.log("first", userSockets.size);
   userSockets.set(id, socket);
+  console.log("two", userSockets.size);
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
