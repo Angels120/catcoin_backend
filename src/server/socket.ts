@@ -151,6 +151,7 @@ io.on('connection', async (socket: Socket) => {
 
   socket.on('click', (clickCount: number, remaingClicks: number) => {
     try {
+      console.log("test ", io.engine.clientsCount);
       handleUserClick(id, clickCount, remaingClicks);
     } catch (error) {}
   });
