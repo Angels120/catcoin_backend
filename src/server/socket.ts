@@ -88,8 +88,8 @@ const io = new SocketIOServer(httpServer, {
 });
 const broadcastActiveUsersCount = () => {
   // const activeUsersCount = userSockets.size; // Count the number of active sockets
-  const activeUsers = io.engine.clientsCount;
-  // const activeUsers = userSockets.size;
+  // const activeUsers = io.engine.clientsCount;
+  const activeUsers = userSockets.size;
   console.log("acitve users: ", activeUsers);
   io.emit('active', activeUsers); // Send the count to all users
 };
