@@ -123,6 +123,7 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
+  userSockets.set(id+1, socket);
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
@@ -143,6 +144,7 @@ io.on('connection', async (socket: Socket) => {
       await updateSingleUserScoreInDb(id);
 
       userSockets.delete(id);
+      userSockets.delete(id+1);
       console.log("disconnected");
       // await sendActiveUsers();
       broadcastActiveUsersCount();
