@@ -1,7 +1,7 @@
 import cluster from 'cluster';
 import os from 'os';
 import dotenv from 'dotenv';
-
+import { startApp } from './app';
 import { startClickRegeneration, monitorTotalScore } from './server/handlers/regenerateClicks';
 import { startBot } from './botServer';
 
@@ -28,9 +28,7 @@ function startTheApp() {
     } else {
       // Workers can share any TCP connection.
       // In this case, it is an HTTP server.
-      import('./app').then(({ startApp }) => {
-        startApp();
-      });
+      startApp();
 
       console.log(`Worker ${process.pid} started`);
     }

@@ -13,11 +13,11 @@ export const sendMessageToAll = async (message: string) => {
   } catch (err) {}
 };
 
-export const getFile = async (content: string, filename: string) => {
-  //@ts-ignore
-  const __dirname = import.meta.dirname;
-  const tempFilePath = path.join(__dirname, filename + '.csv');
-  fs.writeFileSync(tempFilePath, content);
-  const tempFile = new InputFile(tempFilePath);
-  return tempFile;
-};
+// export const getFile = async (content: string, filename: string) => {
+//   //@ts-ignore
+//   const __dirname = import.meta.dirname;
+//   const tempFilePath = path.join(__dirname, filename + '.csv');
+//   fs.writeFileSync(tempFilePath, content);
+//   const tempFile = new InputFile(tempFilePath);
+//   return tempFile;
+// };
