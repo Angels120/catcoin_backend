@@ -61,6 +61,19 @@ export async function incrementTotalScore(incrementAmount: number) {
   await redis.client.publish('totalScoreUpdate', newScore.toString());
 }
 
+export async function incrementOnlineUsers(incrementAmount: number) {
+  const newScore = await redis.client.incrby('online_users', incrementAmount);
+}
+
+export async function getOnlineUsersCache() {
+  const totalScore = await redis.client.get('online_users');
+  return totalScore !== null ? parseInt(totalScore.toString(), 10) : 0;
+}
+
+export async function setOnlineUsersCache(totalScore: number) {
+  await redis.client.set('online_users', totalScore);
+}
+
 export async function setUserBalance(userId: string, balance: number) {
   redis.client.hset('user_balance', `userId:${userId}`, balance);
 }

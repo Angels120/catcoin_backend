@@ -39,7 +39,7 @@ import {
 } from './handlers/teams';
 import { createHmac } from 'crypto';
 import { validate } from '@tma.js/init-data-node';
-import { setUserBalance, setUserBoostsCache } from '../cache';
+import { getOnlineUsersCache, incrementOnlineUsers, setUserBalance, setUserBoostsCache } from '../cache';
 import { handleAffiliate } from './handlers/affiliate';
 
 const token = env['BOT_TOKEN'];
@@ -86,9 +86,8 @@ const io = new SocketIOServer(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
-const broadcastActiveUsersCount = () => {
-  // const activeUsersCount = userSockets.size; // Count the number of active sockets
-  const activeUsers = io.engine.clientsCount;
+const broadcastActiveUsersCount = async () => {
+  const activeUsers = await getOnlineUsersCache();
   // const activeUsers = userSockets.size;
   console.log("acitve users: ", activeUsers);
   io.emit('active', activeUsers); // Send the count to all users
@@ -123,6 +122,7 @@ io.on('connection', async (socket: Socket) => {
   }
 
   userSockets.set(id, socket);
+  await incrementOnlineUsers(1);
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
@@ -144,6 +144,7 @@ io.on('connection', async (socket: Socket) => {
 
       userSockets.delete(id);
       console.log("disconnected");
+      await incrementOnlineUsers(-1);
       // await sendActiveUsers();
       broadcastActiveUsersCount();
     } catch (error) {}
