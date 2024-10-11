@@ -109,7 +109,8 @@ io.on('connection', async (socket: Socket) => {
 
   if (!verifyTelegramData(data)) {
     socket.disconnect();
-    return;
+    console.log("disconnected");
+  return;
   }
 
   const user = await getUserByUserId(id);
@@ -117,11 +118,11 @@ io.on('connection', async (socket: Socket) => {
     //send user not found
     socket.emit('user-not-found');
     socket.disconnect();
+    console.log("disconnected");
     return;
   }
-  console.log("first", userSockets.size);
+
   userSockets.set(id, socket);
-  console.log("two", userSockets.size);
   await logUserInteraction(id);
   // await sendActiveUsers();
   broadcastActiveUsersCount();
@@ -142,6 +143,7 @@ io.on('connection', async (socket: Socket) => {
       await updateSingleUserScoreInDb(id);
 
       userSockets.delete(id);
+      console.log("disconnected");
       // await sendActiveUsers();
       broadcastActiveUsersCount();
     } catch (error) {}
