@@ -484,7 +484,6 @@ export async function getPlayersCountForLast8Weeks() {
           {
             $match: {
               created: {
-                $gte: start,
                 $lte: end
               },
             },
