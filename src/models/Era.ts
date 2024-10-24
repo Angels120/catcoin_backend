@@ -7,8 +7,11 @@ interface IEra {
   level: number;
   salo: number;
   rate: number;
+  total: number;
   isActive: boolean;
   startDate: Date;
+  middleDate: Date;
+  endDate: Date;
 }
 
 const eraSchema = new Schema<IEra>({
@@ -17,7 +20,10 @@ const eraSchema = new Schema<IEra>({
   salo: { type: Number, required: true }, 
   rate: { type: Number, required: true },
   isActive: { type: Boolean, default: false },
-  startDate : { type: Date, default: null}
+  total: {type: Number, default: 0},
+  startDate : { type: Date, default: null},
+  middleDate : { type: Date, default: null},
+  endDate : { type: Date, default: null},
 });
 
 const Era = model<IEra>('Era', eraSchema);
@@ -119,6 +125,36 @@ export async function setStartDate(level: number, startDate: Date) {
   }
 }
 
+export async function setMiddleDate(level: number, middleDate: Date) {
+  try {
+    return await Era.findOneAndUpdate(
+      { level },
+      { middleDate },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function setEndDate(level: number, endDate: Date) {
+  try {
+    return await Era.findOneAndUpdate(
+      { level },
+      { endDate },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+  } catch (err) {
+    return null;
+  }
+}
+
 export async function updateLevel() {
   try {
     const currentEra = await Era.findOneAndUpdate(
@@ -143,5 +179,49 @@ export async function updateLevel() {
     );
   } catch (err) {
     return null;
+  }
+}
+
+export async function getMiddleTask(now: Date) {
+  try {
+    const task = await Era.findOne({
+      endDate: { $lte: now},
+      isActive: true
+    });
+    if(task) return task;
+    else return null
+  } catch (error) {
+    console.log(error);
+    return null
+  }
+  
+}
+
+export async function setEraTotal(level: number, score: number) {
+  try {
+    return await Era.findOneAndUpdate(
+      { level },
+      { total: score },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function getTotalScore() {
+  try {
+    let total = 0;
+    const eras = await Era.find({});
+    eras.forEach((era) => {
+      total += era.total;
+    });
+    return total;
+  } catch (error) {
+    console.log(error);
+    return 0;
   }
 }

@@ -3,7 +3,8 @@ import { Socket } from 'socket.io';
 
 export const MAX_CLICKS_PER_DAY = 1000;
 export const MAX_CLICKS_PER_ERA = 100000000;
-export const HALVING_PERIOD = 240;  // hours
+export const HALVING_PERIOD = 120;  // hours
+export const REVIEW_TIME = 120; // hours
 export const CLICK_REGEN_TIME = 1; // in seconds
 export const userSockets: Map<string, Socket> = new Map();
 

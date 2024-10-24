@@ -2,7 +2,7 @@ import cluster from 'cluster';
 import os from 'os';
 import dotenv from 'dotenv';
 import { startApp } from './app';
-import { startClickRegeneration, monitorTotalScore } from './server/handlers/regenerateClicks';
+import { scheduleHalving, startClickRegeneration } from './server/handlers/regenerateClicks';
 import { startBot } from './botServer';
 
 // Load environment variables
@@ -24,7 +24,7 @@ function startTheApp() {
         // Optionally, you can restart a worker when it dies
         cluster.fork();
       });
-      monitorTotalScore();
+      scheduleHalving();
     } else {
       // Workers can share any TCP connection.
       // In this case, it is an HTTP server.

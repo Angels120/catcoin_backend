@@ -98,9 +98,27 @@ export async function setTotalScoreCache(totalScore: number) {
   await redis.client.publish("totalScoreUpdate", totalScore.toString());
 }
 
+export async function setReviewFlagCache(reviewFlag: number) {
+  await redis.client.set('review_flag', reviewFlag);
+}
+
+export async function setHalvingFlagCache(halvingFlag: number) {
+  await redis.client.set('halving_flag', halvingFlag);
+}
+
 export async function getTotalScoreCache() {
   const totalScore = await redis.client.get('total_score');
   return totalScore !== null ? parseInt(totalScore.toString(), 10) : 0;
+}
+
+export async function getHalvingFlagCache() {
+  const halving_flag = await redis.client.get('halving_flag');
+  return halving_flag !== null ? parseInt(halving_flag.toString(), 10) : 0;
+}
+
+export async function getReviewFlagCache() {
+  const review_flag = await redis.client.get('review_flag');
+  return review_flag !== null ? parseInt(review_flag.toString(), 10) : 0;
 }
 
 

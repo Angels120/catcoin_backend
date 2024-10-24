@@ -12,11 +12,13 @@ import {
   setUserTotalScoreCache,
   resetScore
 } from '../../cache';
+import { addDays, addHours } from 'date-fns';
 import { getUserTotalScore } from '../../service/main';
 import { MAX_CLICKS_PER_DAY, MAX_CLICKS_PER_ERA, userSockets } from '../../utils/constants';
 import { redis } from '../../utils/redis';
 import { sendData } from './sendData';
 import { getUserByUserId, resetDbScore } from '../../models/User';
+import { getCurrentEra, setEndDate, setMiddleDate, setStartDate } from '../../models/Era';
 
 let luaScriptSha1: string;
 
@@ -82,6 +84,16 @@ export async function handleUserClick(userId: string, clickCount: number, remain
     const totalScore = await getTotalScoreCache();
     if(totalScore + clickCount * clickValue > MAX_CLICKS_PER_ERA) {
       clickCount = MAX_CLICKS_PER_ERA - totalScore;
+      const era = await getCurrentEra();
+      if(era) {
+        const now = new Date();
+        await setStartDate(era.level, now);
+        const middleDate = addHours(now, 120);
+        const endDate = addHours(now, 240);
+        await setMiddleDate(era.level, middleDate);
+        await setEndDate(era.level, endDate);
+
+      }
     }
     incrementUserBalance(userId, clickCount * clickValue);
     incrementTotalScore(clickCount * clickValue);

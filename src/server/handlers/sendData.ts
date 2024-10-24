@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, setTotalScoreCache, getTotalScoreCache, setUserTotalScoreCache } from '../../cache';
+import { getUserBalance, getUserClicks, getUserReamingClicks, getLastUpdateTime, getAllUserScoresFromRedis, setTotalScoreCache, getTotalScoreCache, setUserTotalScoreCache, getReviewFlagCache, getHalvingFlagCache } from '../../cache';
 import { getTeamById } from '../../models/Team';
-import { getCurrentEra, setStartDate, updateLevel } from '../../models/Era';
+import { getCurrentEra, getTotalScore, setStartDate, updateLevel } from '../../models/Era';
 import {
   BOOST_DESCRIPTIONS,
   BOOST_EMOTES,
@@ -46,6 +46,7 @@ type eraPayload = {
   totalScore: number;
   isActive: boolean;
   period?:number;
+  type?:string;
 }
 
 type TeamPayload = {
@@ -90,14 +91,22 @@ export async function sendData(id: string) {
       maxClicks += boost.level * 500;
     }
   }
-  const remainingClicks = maxClicks - currentClicks;
   const totalScore = await getTotalScoreCache();
   console.log("total Score", totalScore);
 
   if(era){
     if(era.startDate != null) {
       const currentDate = new Date();
-      const period = 240 * 3600 - getDifferenceInSeconds(currentDate, era.startDate);
+      let period = 0;
+      let type = ''
+      if(era.middleDate > currentDate) {
+        period =  getDifferenceInSeconds(currentDate, era.middleDate);
+        type = 'review'
+      } else {
+        period =  getDifferenceInSeconds(currentDate, era.endDate);
+        type = 'halving'
+      }
+      
       maxClicks = era.salo;
       const eraData: eraPayload = {
         totalScore,
@@ -107,6 +116,7 @@ export async function sendData(id: string) {
         description : era?.description,
         isActive: false,
         period : period,
+        type: type
       };
       socket.emit('era-data', eraData);
     }
@@ -139,8 +149,10 @@ export async function sendData(id: string) {
 
   // Emit consolidated data payload
   socket.emit('user-data', payload);
-  const rankn = await getUserRankNumber(score);
-  socket.emit('user-rank', rankn);
+  // const rankn = await getUserRankNumber(score);
+  const review_flag = await getReviewFlagCache();
+  const halving_flag = await getHalvingFlagCache();
+  // socket.emit('user-rank', rankn);
 }
 
 export async function sendRemainingClicks(id: string) {
@@ -339,6 +351,18 @@ export async function sendTotalUsers(userId: string) {
     const socket = userSockets.get(userId);
     const totalUsers = await getTotalUsersLength();
     socket?.emit('total', totalUsers);
+  } catch (error) {
+    console.error('Error getting totalUsers Length:', error);
+    throw error; // Rethrow or handle as needed
+  }
+  
+}
+
+export async function sendTotalScore(userId: string) {
+  try {
+    const socket = userSockets.get(userId);
+    const totalScore = await getTotalScore();
+    socket?.emit('totalScore', totalScore);
   } catch (error) {
     console.error('Error getting totalUsers Length:', error);
     throw error; // Rethrow or handle as needed

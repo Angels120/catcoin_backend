@@ -5,6 +5,7 @@ import { initializeDefaultTasks } from './models/Task';
 import { runDailyReset } from './utils/schedule';
 import { initializeDefaultEras } from './models/Era';
 import { setTotalScore } from './service/main';
+import { initAdmin } from './models/Admin';
 
 dotenv.config();
 
@@ -15,8 +16,9 @@ export async function startBot() {
     await initTeams();
     await initializeDefaultTasks();
     await initializeDefaultEras();
+    await initAdmin();
     await setTotalScore();
-    runDailyReset();
+    // runDailyReset();
     console.log('Telegram bot started');
   } catch (err) {
     console.error(err);

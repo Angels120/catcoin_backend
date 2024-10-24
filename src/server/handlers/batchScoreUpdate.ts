@@ -1,4 +1,5 @@
-import { getAllUserScoresFromRedis, getUserBalance, getUserScore, resetScore } from '../../cache';
+import { getAllUserScoresFromRedis, getTotalScoreCache, getUserBalance, getUserScore, resetScore } from '../../cache';
+import { getCurrentEra, setEraTotal } from '../../models/Era';
 import { incrementScore, setUserBalance } from '../../models/User';
 // Run the score update every 5 minutes
 const UPDATE_SCORES_INTERVAL = 5 * 60 * 1000;
@@ -52,5 +53,17 @@ export async function updateSingleUserScoreInDb(id: number | string) {
     await resetScore(id.toString());
   } catch (error: any) {
     throw new Error(`Failed to update score for user ${id}: ${error.message}`);
+  }
+}
+
+export async function updateEraTotalScoreInDb() {
+  try {
+    const totalScore = await getTotalScoreCache();
+    const currentEra = await getCurrentEra();
+    if(currentEra) {
+      await setEraTotal(currentEra.level, totalScore);
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to update score for Era `);
   }
 }
