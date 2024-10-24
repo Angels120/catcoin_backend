@@ -63,8 +63,8 @@ app.use('/api/auth', authRouter);
 
 const io = new SocketIOServer(httpServer, {
   cors: {
-    // origin: "*", // Allow your client URL
-    origin: env['GAME_URL'], // Allow your client URL
+    origin: "*", // Allow your client URL
+    // origin: env['GAME_URL'], // Allow your client URL
     methods: ['GET', 'POST'],
   },
 });
