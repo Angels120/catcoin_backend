@@ -9,6 +9,7 @@ const router = express.Router();
 // Admin login route to get JWT token
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  console.log(email, password);
 
   const user = await findAdmin(email);
   if (!user) {

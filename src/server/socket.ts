@@ -95,7 +95,7 @@ io.on('connection', async (socket: Socket) => {
   if (!verifyTelegramData(data)) {
     socket.disconnect();
     console.log("disconnected");
-  return;
+    return;
   }
 
   const user = await getUserByUserId(id);
