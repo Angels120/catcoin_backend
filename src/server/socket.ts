@@ -53,7 +53,11 @@ const port = env['PORT'] || 3001;
 
 const app = express();
 const httpServer = createServer(app);
-app.use(cors());
+app.use(cors({
+  origin: '*', // Replace this with the origin you want to allow
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods if needed
+  credentials: true // If you need to send cookies or other credentials
+}));
 app.use(express.json());
 
 app.use('/api/admin', adminRouter);
@@ -63,8 +67,8 @@ app.use('/api/auth', authRouter);
 
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*", // Allow your client URL
-    // origin: env['GAME_URL'], // Allow your client URL
+    // origin: "*", // Allow your client URL
+    origin: env['GAME_URL'], // Allow your client URL
     methods: ['GET', 'POST'],
   },
 });
