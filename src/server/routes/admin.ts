@@ -4,7 +4,7 @@ import { adminAuth } from '../middleware/adminAuth';
 const adminRouter = express.Router();
 
 // Admin route - protected, only accessible to admins
-adminRouter.get('/dashboard', adminAuth, (req: Request, res: Response) => {
+adminRouter.get('/dashboard', adminAuth, (req: any, res: any) => {
   res.json({ message: 'Welcome Admin! This is the admin dashboard.' });
 });
 

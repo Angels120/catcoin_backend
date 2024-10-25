@@ -8,7 +8,7 @@
     "start": "node dist/src/cluster.js",
     "dev": "node --loader ts-node/esm src/cluster.ts",
     "build": "tsc",
-    "startDev": "nodemon src/cluster.ts"
+    "startDev": "nodemon --watch src --ext ts --exec \"node --loader ts-node/esm src/cluster.ts\""
   },
   "keywords": [],
   "author": "",

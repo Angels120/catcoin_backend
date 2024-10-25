@@ -7,7 +7,7 @@ const secretKey = process.env.JWT_SECRET_KEY || ''; // Keep this in an environme
 const router = express.Router();
 
 // Admin login route to get JWT token
-router.post("/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: any, res: any) => {
   const { email, password } = req.body;
   console.log(email, password);
 
